@@ -20,11 +20,11 @@ module Api
 					masterDetails = params[:details][2]
 					award = DemoAward.new(badge_name: params[:badge_name], has_mastery: params[:has_mastery])
 					if award.save
-						basicMastery = DemoMastery.new(mastery_name: "Basic", mastery_requirements: basicDetails['badge_requirements'], results_description: basicDetails['results_description'], recommended_level: basicDetails['recommended_level'], require_certification: basicDetails['require_certification'], award_id: award.id)
+						basicMastery = DemoMastery.new(mastery_name: "Basic", mastery_requirements: basicDetails['badge_requirements'], results_description: basicDetails['results_description'], recommended_level: basicDetails['recommended_level'], require_certification: basicDetails['require_certification'], demo_award_id: award.id)
 						basicMastery.save
-						advancedMastery = DemoMastery.new(mastery_name: "Advanced", mastery_requirements: advancedDetails['badge_requirements'], results_description: advancedDetails['results_description'], recommended_level: advancedDetails['recommended_level'], require_certification: advancedDetails['require_certification'], award_id: award.id)
+						advancedMastery = DemoMastery.new(mastery_name: "Advanced", mastery_requirements: advancedDetails['badge_requirements'], results_description: advancedDetails['results_description'], recommended_level: advancedDetails['recommended_level'], require_certification: advancedDetails['require_certification'], demo_award_id: award.id)
 						advancedMastery.save
-						masterMastery = DemoMastery.new(mastery_name: "Master", mastery_requirements: masterDetails['badge_requirements'], results_description: masterDetails['results_description'], recommended_level: masterDetails['recommended_level'], require_certification: masterDetails['require_certification'], award_id: award.id)
+						masterMastery = DemoMastery.new(mastery_name: "Master", mastery_requirements: masterDetails['badge_requirements'], results_description: masterDetails['results_description'], recommended_level: masterDetails['recommended_level'], require_certification: masterDetails['require_certification'], demo_award_id: award.id)
 						masterMastery.save
 
 						render json: award
@@ -47,7 +47,7 @@ module Api
 			awards = DemoAward.all.order('id')
 			masteries = []
 			for award in awards
-				mastery = DemoMastery.where(award_id: award.id).order('id')
+				mastery = DemoMastery.where(demo_award_id: award.id).order('id')
 				masteries.push(mastery)
 			end
 			
@@ -98,7 +98,7 @@ module Api
 					render json: award
 				else
 					if award.has_mastery
-						masteries = DemoMastery.where(award_id: params[:id])
+						masteries = DemoMastery.where(demo_award_id: params[:id])
 						masteries.destroy_all
 						award['badge_name'] = params[:badge_name]
 						award['badge_requirements'] = details['badge_requirements']
@@ -118,11 +118,11 @@ module Api
 						basicDetails = params[:details][0]
 						advancedDetails = params[:details][1]
 						masterDetails = params[:details][2]
-						basicMastery = DemoMastery.new(mastery_name: "Basic", mastery_requirements: basicDetails['badge_requirements'], results_description: basicDetails['results_description'], recommended_level: basicDetails['recommended_level'], require_certification: basicDetails['require_certification'], award_id: award.id)
+						basicMastery = DemoMastery.new(mastery_name: "Basic", mastery_requirements: basicDetails['badge_requirements'], results_description: basicDetails['results_description'], recommended_level: basicDetails['recommended_level'], require_certification: basicDetails['require_certification'], demo_award_id: award.id)
 						basicMastery.save
-						advancedMastery = DemoMastery.new(mastery_name: "Advanced", mastery_requirements: advancedDetails['badge_requirements'], results_description: advancedDetails['results_description'], recommended_level: advancedDetails['recommended_level'], require_certification: advancedDetails['require_certification'], award_id: award.id)
+						advancedMastery = DemoMastery.new(mastery_name: "Advanced", mastery_requirements: advancedDetails['badge_requirements'], results_description: advancedDetails['results_description'], recommended_level: advancedDetails['recommended_level'], require_certification: advancedDetails['require_certification'], demo_award_id: award.id)
 						advancedMastery.save
-						masterMastery = DemoMastery.new(mastery_name: "Master", mastery_requirements: masterDetails['badge_requirements'], results_description: masterDetails['results_description'], recommended_level: masterDetails['recommended_level'], require_certification: masterDetails['require_certification'], award_id: award.id)
+						masterMastery = DemoMastery.new(mastery_name: "Master", mastery_requirements: masterDetails['badge_requirements'], results_description: masterDetails['results_description'], recommended_level: masterDetails['recommended_level'], require_certification: masterDetails['require_certification'], demo_award_id: award.id)
 						masterMastery.save
 						if award.save
 							render json: award
@@ -135,7 +135,7 @@ module Api
 		end
 
 		def getMasteries
-			masteries = DemoMastery.where(award_id: params[:award_id]).order('id')
+			masteries = DemoMastery.where(demo_award_id: params[:award_id]).order('id')
 
 			render json: masteries
 		end
@@ -149,22 +149,22 @@ module Api
 		end
 
 		def getColumns
-			columns = DemoCustomColumn.where(award_id: params[:id])
+			columns = DemoCustomColumn.where(demo_award_id: params[:id])
 
 			render json: columns
 		end
 
 		def deleteAward
 			award = DemoAward.find_by(id: params[:id])
-			masteries = DemoMastery.where(award_id: award['id'])
+			masteries = DemoMastery.where(demo_award_id: award['id'])
 			masteries.destroy_all
-			quizzes = DemoQuiz.where(award_id: award['id'])
-			assignments = DemoAssignment.where(quiz_id: quizzes['id'])
-			assigned_accounts = DemoAssignedAccount.where(assignment_id: assignments['id'])
+			quizzes = DemoQuiz.where(demo_award_id: award['id'])
+			assignments = DemoAssignment.where(demo_quiz_id: quizzes['id'])
+			assigned_accounts = DemoAssignedAccount.where(demo_assignment_id: assignments['id'])
 			assigned_accounts.destroy_all
 			assignments.destroy_all
 			quizzes.destroy_all
-			questions = DemoQuestion.where(award_id: award['id'])
+			questions = DemoQuestion.where(demo_award_id: award['id'])
 			questions.destroy_all
 
 			if award.destroy

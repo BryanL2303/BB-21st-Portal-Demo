@@ -25,20 +25,20 @@ module Api
 
 		def getQuizzes
 			topic = DemoTopic.find_by(topic_name: params[:topic_name])
-			quizzes = DemoQuiz.where(topic_id: topic.id)
+			quizzes = DemoQuiz.where(demo_topic_id: topic.id)
 			
 			render json: quizzes
 		end
 
 		def getQuestions
 			topic = DemoTopic.find_by(topic_name: params[:topic_name])
-			questions = DemoQuestion.where(topic_id: topic.id, question_type: params[:question_type]).order('permanent')
+			questions = DemoQuestion.where(demo_topic_id: topic.id, question_type: params[:question_type]).order('permanent')
 			
 			render json: questions
 		end
 
 		def deleteTopic
-			quizzes = DemoQuiz.where(topic_id: params[:topic_id])
+			quizzes = DemoQuiz.where(demo_topic_id: params[:topic_id])
 			quizzes.destroy_all
 			topic = DemoTopic.find_by(topic_name: params[:topic_name])
 			#Need to loop through all replies, comments and topics related to this account

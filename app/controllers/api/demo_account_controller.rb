@@ -105,13 +105,13 @@ module Api
 			account = decode_token(params[:token])
 
 			if params[:award]['masteryId'] == '0'
-				assignments = DemoAssignment.where(award_id: params[:award]['awardId']).order('id')
+				assignments = DemoAssignment.where(demo_award_id: params[:award]['awardId']).order('id')
 			else
-				assignments = DemoAssignment.where(mastery_id: params[:award]['masteryId']).order('id')
+				assignments = DemoAssignment.where(demo_mastery_id: params[:award]['masteryId']).order('id')
 			end
 			quizzes = []
 			for assignment in assignments
-				assignedAssignments = DemoAssignedAccount.where(assignment_id: assignment.id).where(account_id: account)
+				assignedAssignments = DemoAssignedAccount.where(demo_assignment_id: assignment.id).where(demo_account_id: account)
 				if assignedAssignments != []
 					quiz = DemoQuiz.find_by(id: assignment.quiz_id)
 					quizzes.append(quiz)

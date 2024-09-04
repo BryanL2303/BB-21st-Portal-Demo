@@ -345,7 +345,7 @@ award = DemoAward.new(badge_name: "Target", recommended_level: "1", has_mastery:
 9. Company life and history 
 10. Company organisation and ranks", 
 	results_description: "Boys completed 2 induction parades and are oriented with basic knowledge of The Boys' Brigade")
-award.save
+award.save!
 
 award = DemoAward.new(badge_name: "Christian Education", recommended_level: "3", has_mastery: false, custom_description: false, has_custom_columns: false, has_results: true, has_pass: false, 
 	badge_requirements: 
@@ -357,10 +357,10 @@ award = DemoAward.new(badge_name: "Christian Education", recommended_level: "3",
 2. Samples of 3 lesson plans.
 3. Samples of worksheets and activities.", 
 	results_description: "Boys have undergone over 24 sessions of approved Christian Education syllabus over a period of 3 years.")
-award.save
+award.save!
 
 award = DemoAward.new(badge_name: "Total Defence", has_mastery: true)
-award.save
+award.save!
 mastery = DemoMastery.new(demo_award_id: award.id, mastery_name: "Bronze", recommended_level: "1", custom_description: false, has_custom_columns: false, has_results: true, has_pass: false, 
 	mastery_requirements: 
 "Awarded to Boys who have:
@@ -372,7 +372,7 @@ mastery = DemoMastery.new(demo_award_id: award.id, mastery_name: "Bronze", recom
 
 Officers may download the latest TD Lesson Plans from Officers Portal > Resources > Seniors > New SP Curriculum > Total Defence.", 
 	results_description: "Boys have completed SLS lessons, played GOTC II, designed and shared a new \"Action\" card for the game and also completed an introduction to CPR-AED as part of school's PE curriculum.")
-mastery.save
+mastery.save!
 mastery = DemoMastery.new(demo_award_id: award.id, mastery_name: "Silver", recommended_level: "2", custom_description: false, has_custom_columns: false, has_results: true, has_pass: false, 
 	mastery_requirements: 
 "Awarded to Boys who have attained TD (Bronze) and:
@@ -382,7 +382,7 @@ mastery = DemoMastery.new(demo_award_id: award.id, mastery_name: "Silver", recom
 
 Officers may download the latest TD Lesson Plans from Officers Portal > Resources > Seniors > New SP Curriculum > Total Defence.", 
 	results_description: "Boys have submitted storyboard for N.E.mation! on one of the 6 TF pillers and also facilitated a pair of peers in GOTC II gameplay.")
-mastery.save
+mastery.save!
 mastery = DemoMastery.new(demo_award_id: award.id, mastery_name: "Gold", recommended_level: "3", custom_description: false, has_custom_columns: false, has_results: true, has_pass: false, 
 	mastery_requirements: 
 "Awarded to Boys who have attained TD (Silver) and:
@@ -392,7 +392,7 @@ mastery = DemoMastery.new(demo_award_id: award.id, mastery_name: "Gold", recomme
 
 Officers may download the latest TD Lesson Plans from Officers Portal > Resources > Seniors > New SP Curriculum > Total Defence.", 
 	results_description: "Boys have planned and executed a TD related VIA project benefiting the community and also completed CPR-AED certification.")
-mastery.save
+mastery.save!
 
 award = DemoAward.new(badge_name: "Community Spiritedness", has_mastery: true)
 award.save

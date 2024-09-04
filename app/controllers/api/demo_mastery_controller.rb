@@ -18,7 +18,7 @@ module Api
 		end
 
 		def getColumns
-			columns = DemoCustomColumn.where(mastery_id: params[:id])
+			columns = DemoCustomColumn.where(demo_mastery_id: params[:id])
 
 			render json: columns
 		end

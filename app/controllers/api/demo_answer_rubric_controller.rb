@@ -3,7 +3,7 @@ module Api
 		protect_from_forgery with: :null_session
 
 		def createRubric
-			rubric = DemoAnswerRubric.new(rubric: params[:rubric], question_id: params[:question_id])
+			rubric = DemoAnswerRubric.new(rubric: params[:rubric], demo_question_id: params[:question_id])
 
 			if rubric.save
 				render json: rubric

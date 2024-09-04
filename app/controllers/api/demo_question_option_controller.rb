@@ -3,7 +3,7 @@ module Api
 		protect_from_forgery with: :null_session
 
 		def createOption
-			questionOption = DemoQuestionOption.new(question: params[:question], answer: params[:answer], correct: params[:correct], question_id: params[:question_id])
+			questionOption = DemoQuestionOption.new(question: params[:question], answer: params[:answer], correct: params[:correct], demo_question_id: params[:question_id])
 
 			if questionOption.save
 				render json: true

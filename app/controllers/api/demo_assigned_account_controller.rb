@@ -20,10 +20,10 @@ module Api
 
 		def getAssignedAccount
 			accountId = decode_token(params[:token])
-			assigned_accounts = DemoAssignedAccount.where(account_id: accountId)
-			assignments = DemoAssignment.where(quiz_id: params[:quiz_id])
+			assigned_accounts = DemoAssignedAccount.where(demo_account_id: accountId)
+			assignments = DemoAssignment.where(demo_quiz_id: params[:quiz_id])
 			for assignment in assignments
-				assigned_account = assigned_accounts.find_by(assignment_id: assignment.id)
+				assigned_account = assigned_accounts.find_by(demo_assignment_id: assignment.id)
 				if assigned_account != nil
 					render json: assigned_account
 					break
@@ -32,7 +32,7 @@ module Api
 		end
 
 		def getAssignedAccounts
-			assigned_accounts = DemoAssignedAccount.where(assignment_id: params[:assignment_id]).order('account_id')
+			assigned_accounts = DemoAssignedAccount.where(demo_assignment_id: params[:assignment_id]).order('demo_account_id')
 
 			render json: assigned_accounts
 		end
@@ -58,27 +58,27 @@ module Api
 			quiz = DemoQuiz.find_by(id: assignment.quiz_id)
 			data["quiz"] = quiz
 
-			attemptScore = DemoAttemptScore.where(assigned_account_id: assigned_account.id).find_by(attempt: params[:attempt])
+			attemptScore = DemoAttemptScore.where(demo_assigned_account_id: assigned_account.id).find_by(attempt: params[:attempt])
 			data["attempt_score"] = attemptScore
 
-			quizQuestions = DemoQuizQuestion.where(quiz_id: quiz.id).order('question_id')
+			quizQuestions = DemoQuizQuestion.where(quiz_id: quiz.id).order('demo_question_id')
 			
 			data["questions"] = []
-			assignmentAnswers = DemoAssignmentAnswer.where(account_id: assigned_account.account_id).where(assignment_id: assigned_account.assignment_id).where(attempt: params[:attempt])
+			assignmentAnswers = DemoAssignmentAnswer.where(demo_account_id: assigned_account.account_id).where(demo_assignment_id: assigned_account.demo_assignment_id).where(attempt: params[:attempt])
 			for quizQuestion in quizQuestions
 				answer = {}
-				question = DemoQuestion.find_by(id: quizQuestion.question_id)
+				question = DemoQuestion.find_by(id: quizQuestion.demo_question_id)
 				if question.question_type != 'Open-ended'
 					rubric = DemoQuestionOption.where(question_id: question.id).order('id')
 					answer = []
 					for option in rubric
-						assignmentAnswer = assignmentAnswers.where(question_id: question.id).find_by(question_option_id: option.id)
+						assignmentAnswer = assignmentAnswers.where(demo_question_id: question.id).find_by(demo_question_option_id: option.id)
 						answer.push({"rubric": option, "answer": assignmentAnswer})
 					end
 				else
-					rubric = DemoAnswerRubric.where(question_id: question.id)
+					rubric = DemoAnswerRubric.where(demo_question_id: question.id)
 					answer["rubric"] = rubric
-					assignmentAnswer = assignmentAnswers.where(question_id: question.id)
+					assignmentAnswer = assignmentAnswers.where(demo_question_id: question.id)
 					answer["answer"] = assignmentAnswer
 				end
 

@@ -5,15 +5,15 @@ module Api
 		def createUniformInspection
 			assessorId = decode_token(params[:token])
 			for boy in params[:boys]
-				uniformInspection = DemoUniformInspection.new(account_id: boy['id'], assessor_id: assessorId, date: params[:date])
+				uniformInspection = DemoUniformInspection.new(demo_account_id: boy['id'], demo_assessor_id: assessorId, date: params[:date])
 				uniformInspection.save
 				totalScore = 0
 				components = DemoUniformComponent.all.order('id')
 				for component in components
-					fields = DemoComponentField.where(uniform_component_id: component.id)
+					fields = DemoComponentField.where(demo_uniform_component_id: component.id)
 					for field in fields
 						if params[:selectedContents][boy['id'].to_s][component.id.to_s][field.id.to_s]
-							selectedComponent = DemoSelectedComponent.new(uniform_inspection_id: uniformInspection.id, component_field_id: field.id)
+							selectedComponent = DemoSelectedComponent.new(demo_uniform_inspection_id: uniformInspection.id, demo_component_field_id: field.id)
 							selectedComponent.save
 							totalScore += DemoComponentField.find_by(id: field.id).score
 						end
@@ -29,16 +29,16 @@ module Api
 		def getInspection
 			inspection = DemoUniformInspection.find_by(id: params[:id])
 			accounts = DemoAccount.where(account_type: 'Boy').order('id')
-			boy = DemoAccount.find_by(id: inspection.account_id)
+			boy = DemoAccount.find_by(id: inspection.demo_account_id)
 			inspections = {}
 			boys = []
 			for account in accounts
-				accountInspections = DemoUniformInspection.where(account_id: account.id).order('id')
+				accountInspections = DemoUniformInspection.where(demo_account_id: account.id).order('id')
 				if accountInspections != []
 					boys.push(account)
 					inspections[account.id] = {'inspections': accountInspections}
 					for accountInspection in accountInspections
-						selectedComponents = DemoSelectedComponent.where(uniform_inspection_id: accountInspection.id)
+						selectedComponents = DemoSelectedComponent.where(demo_uniform_inspection_id: accountInspection.id)
 						componentIds = {}
 						for selectedComponent in selectedComponents
 							componentIds[selectedComponent.id] = true
@@ -57,7 +57,7 @@ module Api
 			accounts = DemoAccount.where(account_type: 'Boy').order('level').order('account_name')
 			data = {'boys': accounts}
 			for account in accounts
-				inspection = DemoUniformInspection.where(account_id: account.id).order('created_at')[-1]
+				inspection = DemoUniformInspection.where(demo_account_id: account.id).order('created_at')[-1]
 				data[account.id] = inspection
 				if inspection != nil
 					data[inspection.assessor_id] = DemoAccount.find_by(id: inspection.assessor_id)
@@ -72,7 +72,7 @@ module Api
 			components = []
 			data = {}
 			for component in uniformComponents
-				fields = DemoComponentField.where('uniform_component_id': component.id)
+				fields = DemoComponentField.where('demo_uniform_component_id': component.id)
 				components.push(component)
 				data[component['component_name']] = fields
 			end
@@ -83,19 +83,19 @@ module Api
 		def deleteUniformInspection
 			assignment = DemoAssignment.find_by(id: params[:id])
 
-			assigned_accounts = DemoAssignedAccount.where(assignment_id: params[:id])
+			assigned_accounts = DemoAssignedAccount.where(demo_assignment_id: params[:id])
 			for assigned_account in assigned_accounts
-				attemptScores = DemoAttemptScore.where(assigned_account_id: assigned_account.id)
+				attemptScores = DemoAttemptScore.where(demo_assigned_account_id: assigned_account.id)
 				attemptScores.destroy_all
-				assignmentAnswers = DemoAssignmentAnswer.where(account_id: assigned_account.account_id).where(assignment_id: assigned_account.assignment_id)
+				assignmentAnswers = DemoAssignmentAnswer.where(demo_account_id: assigned_account.account_id).where(demo_assignment_id: assigned_account.demo_assignment_id)
 				assignmentAnswers.destroy_all
 			end
 			assigned_accounts.destroy_all
 
-			quiz_id = assignment["quiz_id"]
+			quiz_id = assignment["demo_quiz_id"]
 
 			if assignment.destroy
-				assignments = DemoAssignment.where(quiz_id: quiz_id)
+				assignments = DemoAssignment.where(demo_quiz_id: quiz_id)
 				if assignments == nil
 					quiz = DemoQuiz.find_by(id: quiz_id)
 					quiz["assigned"] = false

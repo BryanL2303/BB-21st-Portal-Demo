@@ -5,9 +5,9 @@ module Api
 		def createAssignment
 			account = decode_token(params[:token])
 			if params[:award][:masteryId] == '0'
-				assignment = DemoAssignment.new(account_id: account, quiz_id: params[:quiz_id], award_id: params[:award][:awardId], assignment_name: params[:assignment_name], attempt_limit: params[:attempt_limit], show_answer: params[:show_answer])
+				assignment = DemoAssignment.new(demo_account_id: account, demo_quiz_id: params[:quiz_id], demo_award_id: params[:award][:awardId], assignment_name: params[:assignment_name], attempt_limit: params[:attempt_limit], show_answer: params[:show_answer])
 			else
-				assignment = DemoAssignment.new(account_id: account, quiz_id: params[:quiz_id], mastery_id: params[:award][:masteryId], assignment_name: params[:assignment_name], attempt_limit: params[:attempt_limit], show_answer: params[:show_answer])
+				assignment = DemoAssignment.new(demo_account_id: account, demo_quiz_id: params[:quiz_id], demo_mastery_id: params[:award][:masteryId], assignment_name: params[:assignment_name], attempt_limit: params[:attempt_limit], show_answer: params[:show_answer])
 			end
 
 			if assignment.save
@@ -15,7 +15,7 @@ module Api
 				quiz['assigned'] = true
 				quiz.save
 				for accountId in params[:accounts]
-					assigned_account = DemoAssignedAccount.new(account_id: accountId, assignment_id: assignment.id, score: 0, attempts: 0)
+					assigned_account = DemoAssignedAccount.new(demo_account_id: accountId, demo_assignment_id: assignment.id, score: 0, attempts: 0)
 					assigned_account.save
 				end
 				render json: assignment
@@ -27,12 +27,12 @@ module Api
 		def getAssignment
 			if params[:id] == '0'
 				accountId = decode_token(params[:token])
-				assignments = DemoAssignment.where(quiz_id: params[:quiz_id])
+				assignments = DemoAssignment.where(demo_quiz_id: params[:quiz_id])
 				data = {}
 				for assignment in assignments
-					assigned_account = DemoAssignedAccount.find_by(account_id: accountId, assignment_id: assignment.id)
+					assigned_account = DemoAssignedAccount.find_by(demo_account_id: accountId, demo_assignment_id: assignment.id)
 					if assigned_account != nil
-						attemptScore = DemoAttemptScore.find_by(attempt: assigned_account.attempts, assigned_account_id: assigned_account.id)
+						attemptScore = DemoAttemptScore.find_by(attempt: assigned_account.attempts, demo_assigned_account_id: assigned_account.id)
 						data['assigned_account'] = assigned_account
 						data['attemptScore'] = attemptScore
 					end
@@ -46,9 +46,9 @@ module Api
 
 		def getAssignments
 			if params[:award]['masteryId'] == '0'
-				assignments = DemoAssignment.where(award_id: params[:award]['awardId']).order('id')
+				assignments = DemoAssignment.where(demo_award_id: params[:award]['awardId']).order('id')
 			else
-				assignments = DemoAssignment.where(mastery_id: params[:award]['masteryId']).order('id')
+				assignments = DemoAssignment.where(demo_mastery_id: params[:award]['masteryId']).order('id')
 			end
 
 			render json: assignments
@@ -56,21 +56,21 @@ module Api
 
 		def submitAssignment
 			accountId = decode_token(params[:token])
-			assignments = DemoAssignment.where(quiz_id: params[:quiz_id])
+			assignments = DemoAssignment.where(demo_quiz_id: params[:quiz_id])
 			graded = true
 			for assignment in assignments
-				assigned_accounts = DemoAssignedAccount.where(assignment_id: assignment.id)
-				assigned_account = assigned_accounts.find_by(account_id: accountId)
+				assigned_accounts = DemoAssignedAccount.where(demo_assignment_id: assignment.id)
+				assigned_account = assigned_accounts.find_by(demo_account_id: accountId)
 				if assigned_account != nil
 					quiz = DemoQuiz.find_by(id: params[:quiz_id])
 					assigned_account.attempts += 1
 					marks = 0.0
 					for answer in params[:answers]
-						question = DemoQuestion.find_by(id: answer['question_id'])
+						question = DemoQuestion.find_by(id: answer['demo_question_id'])
 						if question.question_type == 'MCQ'
-							assignmentAnswer = DemoAssignmentAnswer.new(account_id: accountId, assignment_id: assigned_account.assignment_id, question_id: answer['question_id'], attempt: assigned_account.attempts, question_type: question.question_type)
+							assignmentAnswer = DemoAssignmentAnswer.new(demo_account_id: accountId, demo_assignment_id: assigned_account.demo_assignment_id, demo_question_id: answer['demo_question_id'], attempt: assigned_account.attempts, question_type: question.question_type)
 							option = DemoQuestionOption.find_by(id: answer['selected'][0])
-							assignmentAnswer.question_option_id = option.id
+							assignmentAnswer.demo_question_option_id = option.id
 							if option.correct
 								marks += question.marks
 								assignmentAnswer.score = question.marks
@@ -83,7 +83,7 @@ module Api
 							partial = 0.0
 							correctAnswers = 0
 							temporary = 0.0
-							options = DemoQuestionOption.where(question_id: answer['question_id'])
+							options = DemoQuestionOption.where(demo_question_id: answer['demo_question_id'])
 							for option in options
 								if option.correct
 									correctAnswers += 1
@@ -92,8 +92,8 @@ module Api
 							partial = question.marks / correctAnswers
 							for optionId in answer['selected']
 								option = DemoQuestionOption.find_by(id: optionId)
-								assignmentAnswer = DemoAssignmentAnswer.new(account_id: accountId, assignment_id: assigned_account.assignment_id, question_id: answer['question_id'], attempt: assigned_account.attempts, question_type: question.question_type)
-								assignmentAnswer.question_option_id = option.id
+								assignmentAnswer = DemoAssignmentAnswer.new(demo_account_id: accountId, demo_assignment_id: assigned_account.demo_assignment_id, demo_question_id: answer['demo_question_id'], attempt: assigned_account.attempts, question_type: question.question_type)
+								assignmentAnswer.demo_question_option_id = option.id
 								assignmentAnswer.score = 0
 								assignmentAnswer.save
 								if option.correct
@@ -103,7 +103,7 @@ module Api
 								end
 							end
 							if temporary >= 0.0
-								assignmentAnswers = DemoAssignmentAnswer.where(account_id: accountId, assignment_id:assigned_account.assignment_id, question_id: answer['question_id'])
+								assignmentAnswers = DemoAssignmentAnswer.where(demo_account_id: accountId, demo_assignment_id:assigned_account.demo_assignment_id, demo_question_id: answer['demo_question_id'])
 								for assignmentAnswer in assignmentAnswers
 									assignmentAnswer.score = temporary
 									assignmentAnswer.save
@@ -113,7 +113,7 @@ module Api
 						end
 						if question.question_type == 'Open-ended'
 							graded = false
-							assignmentAnswer = DemoAssignmentAnswer.new(account_id: accountId, assignment_id: assigned_account.assignment_id, question_id: answer['question_id'], attempt: assigned_account.attempts, question_type: question.question_type, score: 0, comments: '')
+							assignmentAnswer = DemoAssignmentAnswer.new(demo_account_id: accountId, demo_assignment_id: assigned_account.demo_assignment_id, demo_question_id: answer['demo_question_id'], attempt: assigned_account.attempts, question_type: question.question_type, score: 0, comments: '')
 							assignmentAnswer.answer = answer['selected']
 							assignmentAnswer.save
 						end	
@@ -121,7 +121,7 @@ module Api
 					if marks > assigned_account.score
 						assigned_account.score = marks
 					end
-					attemptScore = DemoAttemptScore.new(assigned_account_id: assigned_account.id, attempt: assigned_account.attempts, score: marks, graded: graded)
+					attemptScore = DemoAttemptScore.new(demo_assigned_account_id: assigned_account.id, attempt: assigned_account.attempts, score: marks, graded: graded)
 					attemptScore.save
 					assigned_account.save
 					
@@ -134,15 +134,15 @@ module Api
 			assignmentAnswer = DemoAssignmentAnswer.find_by(id: params[:id])
 			assignmentAnswer.comments = params[:comments]
 
-			assigned_account = DemoAssignedAccount.where(assignment_id: assignmentAnswer.assignment_id).find_by(account_id: assignmentAnswer.account_id)
-			attemptScore = DemoAttemptScore.where(assigned_account_id: assigned_account.id).find_by(attempt: assignmentAnswer.attempt)
+			assigned_account = DemoAssignedAccount.where(demo_assignment_id: assignmentAnswer.demo_assignment_id).find_by(demo_account_id: assignmentAnswer.demo_account_id)
+			attemptScore = DemoAttemptScore.where(demo_assigned_account_id: assigned_account.id).find_by(attempt: assignmentAnswer.attempt)
 
 			oldScore = assignmentAnswer.score
 			attemptScore.score -= oldScore
 			attemptScore.score += params[:score].to_f
 			attemptScore.save
 
-			attemptScores = DemoAttemptScore.where(assigned_account_id: assigned_account.id)
+			attemptScores = DemoAttemptScore.where(demo_assigned_account_id: assigned_account.id)
 			highestScore = 0
 			for attemptScore in attemptScores
 				if attemptScore.score > highestScore
@@ -165,20 +165,20 @@ module Api
 			data['account'] = account
 			assignment = DemoAssignment.find_by(id: params[:id])
 			data['assignment'] = assignment
-			assigned_accounts_temp = DemoAssignedAccount.where(assignment_id: assignment.id)
+			assigned_accounts_temp = DemoAssignedAccount.where(demo_assignment_id: assignment.id)
 			assigned_accounts = []
 			for assigned_account in assigned_accounts_temp
-				account = DemoAccount.find_by(id: assigned_account.account_id)
+				account = DemoAccount.find_by(id: assigned_account.demo_account_id)
 				assigned_accounts.push(account)
 			end
 			data['assigned_accounts'] = assigned_accounts
-			quiz = DemoQuiz.find_by(id: assignment.quiz_id)
-			if quiz.mastery_id == nil
-				award = DemoAward.find_by(id: quiz.award_id)
+			quiz = DemoQuiz.find_by(id: assignment.demo_quiz_id)
+			if quiz.demo_mastery_id == nil
+				award = DemoAward.find_by(id: quiz.demo_award_id)
 				data['award'] = award
 			else
-				mastery = DemoMastery.find_by(id: quiz.mastery_id)
-				award = DemoAward.find_by(id: mastery.award_id)
+				mastery = DemoMastery.find_by(id: quiz.demo_mastery_id)
+				award = DemoAward.find_by(id: mastery.demo_award_id)
 				data['award'] = award
 				data['mastery'] = mastery
 			end
@@ -189,19 +189,19 @@ module Api
 		def deleteAssignment
 			assignment = DemoAssignment.find_by(id: params[:id])
 
-			assigned_accounts = DemoAssignedAccount.where(assignment_id: params[:id])
+			assigned_accounts = DemoAssignedAccount.where(demo_assignment_id: params[:id])
 			for assigned_account in assigned_accounts
-				attemptScores = DemoAttemptScore.where(assigned_account_id: assigned_account.id)
+				attemptScores = DemoAttemptScore.where(demo_assigned_account_id: assigned_account.id)
 				attemptScores.destroy_all
-				assignmentAnswers = DemoAssignmentAnswer.where(account_id: assigned_account.account_id).where(assignment_id: assigned_account.assignment_id)
+				assignmentAnswers = DemoAssignmentAnswer.where(demo_account_id: assigned_account.demo_account_id).where(demo_assignment_id: assigned_account.demo_assignment_id)
 				assignmentAnswers.destroy_all
 			end
 			assigned_accounts.destroy_all
 
-			quiz_id = assignment["quiz_id"]
+			quiz_id = assignment["demo_quiz_id"]
 
 			if assignment.destroy
-				assignments = DemoAssignment.where(quiz_id: quiz_id)
+				assignments = DemoAssignment.where(demo_quiz_id: quiz_id)
 				if assignments == nil
 					quiz = DemoQuiz.find_by(id: quiz_id)
 					quiz["assigned"] = false
