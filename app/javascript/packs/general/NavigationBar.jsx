@@ -95,7 +95,7 @@ const NavigationBar = () => {
         {cookies.get("Type") != "Boy" && <button className="result-generation--button" onClick={resultGenerationPage}>Result Generation</button>}
         {cookies.get("Type") != "Boy" && <button className="uniform-inspection--button" onClick={uniformInspectionPage}>Uniform Inspection</button>}
         {cookies.get("Type") != "Boy" && <button className="help--button" onClick={helpPage}>Help</button>}
-        <button onClick={resetPasswordPage}>Reset Password</button>
+        {cookies.get("Name") != "John Doe" && <button onClick={resetPasswordPage}>Reset Password</button>}
         <button className="log-out--button" onClick={logOut}>Log Out</button>
       </div>
     )

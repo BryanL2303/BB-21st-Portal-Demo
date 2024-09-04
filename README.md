@@ -126,3 +126,4 @@ Changed website title from Quiz Website to BB 21st Portal
 4 September 2024
 1. Converted the backend into a demo version
 2. Split this version from the actual website to create a demo copy
+3. Created officer account 'John Doe' for trial users, removed access to update John Doe account
