@@ -1,6 +1,6 @@
 class CreateTables < ActiveRecord::Migration[7.0]
   def change
-    create_table :accounts do |t|
+    create_table :demo_accounts do |t|
       t.string :name
       t.string :password
       t.string :type
@@ -8,26 +8,26 @@ class CreateTables < ActiveRecord::Migration[7.0]
       t.timestamps
     end
 
-    create_table :topics do |t|
+    create_table :demo_topics do |t|
       t.string :name
       
       t.timestamps
     end
 
-    create_table :quizzes do |t|
+    create_table :demo_quizzes do |t|
       t.belongs_to :topic
 
       t.timestamps
     end
 
-    create_table :quiz_questions do |t|
+    create_table :demo_quiz_questions do |t|
       t.belongs_to :quiz
       t.belongs_to :question
 
       t.timestamps
     end
 
-    create_table :questions do |t|
+    create_table :demo_questions do |t|
       t.belongs_to :topic
       t.string :type
       t.string :question
@@ -36,7 +36,7 @@ class CreateTables < ActiveRecord::Migration[7.0]
       t.timestamps
     end
 
-    create_table :question_options do |t|
+    create_table :demo_question_options do |t|
       t.belongs_to :question
       t.string :answer
       t.boolean :correct
@@ -44,7 +44,7 @@ class CreateTables < ActiveRecord::Migration[7.0]
       t.timestamps
     end
 
-    create_table :answer_rubric do |t|
+    create_table :demo_answer_rubric do |t|
       t.belongs_to :question
       t.string :rubric
 

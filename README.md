@@ -3,9 +3,10 @@
 BB 21st Portal
 This website helps to facilitate administrative tasks such as creating 32A results and conducting quizzes.
 
+# This version of the website is meant as a demo for showcase.
 Build Status: 
-This website is running with the following link:
-https://bb-21-5a1d0159cf81.herokuapp.com/
+This demo website is running with the following link:
+https://bb-21-demo-e026dc5f2bdb.herokuapp.com/
 
 Usage:
 The website is used by the Boys' Brigade 21st Singapore Company
@@ -121,3 +122,7 @@ Changed website title from Quiz Website to BB 21st Portal
 4. Add route to administrator controller api
 5. Add link to administrator page from navigation menu
 6. Create DatabaseTable to display in AdminPage with functions to CRUD database entries
+
+4 September 2024
+1. Converted the backend into a demo version
+2. Split this version from the actual website to create a demo copy

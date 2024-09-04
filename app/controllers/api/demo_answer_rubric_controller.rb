@@ -1,9 +1,9 @@
 module Api
-	class AnswerRubricController < ApplicationController
+	class DemoAnswerRubricController < ApplicationController
 		protect_from_forgery with: :null_session
 
 		def createRubric
-			rubric = AnswerRubric.new(rubric: params[:rubric], question_id: params[:question_id])
+			rubric = DemoAnswerRubric.new(rubric: params[:rubric], question_id: params[:question_id])
 
 			if rubric.save
 				render json: rubric
@@ -13,7 +13,7 @@ module Api
 		end
 
 		def editRubric
-			rubric = AnswerRubric.find_by(id: params[:answer_rubric_id])
+			rubric = DemoAnswerRubric.find_by(id: params[:answer_rubric_id])
 			rubric.rubric = params[:rubric]
 			
 			if rubric.save
@@ -24,7 +24,7 @@ module Api
 		end
 
 		def deleteRubric
-			rubric = AnswerRubric.find_by(id: params[:answer_rubric_id])
+			rubric = DemoAnswerRubric.find_by(id: params[:answer_rubric_id])
 
 			if rubric.destroy
 				head :no_content

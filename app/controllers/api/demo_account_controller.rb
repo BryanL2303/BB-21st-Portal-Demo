@@ -1,13 +1,13 @@
 module Api
-	class AccountController < ApplicationController
+	class DemoAccountController < ApplicationController
 		protect_from_forgery with: :null_session
 
 		def createAccount
-			account = Account.new(account_name: params[:account_name], password: params[:password], account_type: params[:account_type], rank: params[:rank], credentials: params[:credentials])
+			account = DemoAccount.new(account_name: params[:account_name], password: params[:password], account_type: params[:account_type], rank: params[:rank], credentials: params[:credentials])
 			if params[:level] != nil
 				account['level'] = params[:level]
 			end
-			findAccount = Account.find_by(account_name: params[:account_name])
+			findAccount = DemoAccount.find_by(account_name: params[:account_name])
 
 			if findAccount == nil
 				if account.save
@@ -23,7 +23,7 @@ module Api
 		end
 
 		def authenticateAccount
-			account = Account.find_by(account_name: params[:account_name])
+			account = DemoAccount.find_by(account_name: params[:account_name])
 			if account == nil
 				render json: false
 			else
@@ -37,32 +37,32 @@ module Api
 		end
 
 		def getAccount
-			account = Account.find_by(id: params[:id])
+			account = DemoAccount.find_by(id: params[:id])
 
 			render json: account
 		end
 
 		def getAccounts
-			accounts = Account.where(account_type: params[:account_type]).order('level').order('account_name')
+			accounts = DemoAccount.where(account_type: params[:account_type]).order('level').order('account_name')
 
 			render json: accounts
 		end
 
 		def getOwnAccount
 			accountId = decode_token(params[:token])
-			account = Account.find_by(id: accountId)
+			account = DemoAccount.find_by(id: accountId)
 
 			render json: account
 		end
 
 		def getAccountsByIds
-			accounts = Account.where(id: params[:boy_ids]).order('level').order('account_name')
+			accounts = DemoAccount.where(id: params[:boy_ids]).order('level').order('account_name')
 
 			render json: accounts
 		end
 
 		def toggleType
-			account = Account.find_by(account_type: params[:account_type])
+			account = DemoAccount.find_by(account_type: params[:account_type])
 			account.type = params[:new_type]
 			if account.save
 				render json: true
@@ -72,9 +72,9 @@ module Api
 		end
 
 		def editAccount
-			account = Account.find_by(id: params[:id])
+			account = DemoAccount.find_by(id: params[:id])
 
-			nameClash = Account.find_by(account_name: params[:account_name])
+			nameClash = DemoAccount.find_by(account_name: params[:account_name])
 			if nameClash == nil || nameClash['id'] == account.id
 				account['account_name'] = params[:account_name]
 				account['account_type'] = params[:account_type]
@@ -92,7 +92,7 @@ module Api
 		end
 
 		def deleteAccount
-			account = Account.find_by(account_name: params[:account_name])
+			account = DemoAccount.find_by(account_name: params[:account_name])
 
 			if account.destroy
 				head :no_content
@@ -105,15 +105,15 @@ module Api
 			account = decode_token(params[:token])
 
 			if params[:award]['masteryId'] == '0'
-				assignments = Assignment.where(award_id: params[:award]['awardId']).order('id')
+				assignments = DemoAssignment.where(award_id: params[:award]['awardId']).order('id')
 			else
-				assignments = Assignment.where(mastery_id: params[:award]['masteryId']).order('id')
+				assignments = DemoAssignment.where(mastery_id: params[:award]['masteryId']).order('id')
 			end
 			quizzes = []
 			for assignment in assignments
-				assignedAssignments = AssignedAccount.where(assignment_id: assignment.id).where(account_id: account)
+				assignedAssignments = DemoAssignedAccount.where(assignment_id: assignment.id).where(account_id: account)
 				if assignedAssignments != []
-					quiz = Quiz.find_by(id: assignment.quiz_id)
+					quiz = DemoQuiz.find_by(id: assignment.quiz_id)
 					quizzes.append(quiz)
 				end
 			end
@@ -122,13 +122,13 @@ module Api
 		end
 
 		def getAccountInformation
-			account = Account.find_by(id: params[:id])
+			account = DemoAccount.find_by(id: params[:id])
 
 			render json: account
 		end
 
 		def destroy
-			account = Account.find_by(id: params[:id])
+			account = DemoAccount.find_by(id: params[:id])
 
 			if account.destroy
 				head :no_content

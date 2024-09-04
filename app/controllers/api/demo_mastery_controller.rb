@@ -1,9 +1,9 @@
 module Api
-	class MasteryController < ApplicationController
+	class DemoMasteryController < ApplicationController
 		protect_from_forgery with: :null_session
 
 		def createMastery
-			mastery = Mastery.new(mastery_name: params[:mastery_name], mastery_requirements: params[:mastery_requirements], results_description: params[:results_description], recommended_level: params[:recommended_level])
+			mastery = DemoMastery.new(mastery_name: params[:mastery_name], mastery_requirements: params[:mastery_requirements], results_description: params[:results_description], recommended_level: params[:recommended_level])
 			if mastery.save
 				render json: mastery
 			else
@@ -12,13 +12,13 @@ module Api
 		end
 
 		def getMastery
-			mastery = Mastery.find_by(id: params[:id])
+			mastery = DemoMastery.find_by(id: params[:id])
 			
 			render json: mastery
 		end
 
 		def getColumns
-			columns = CustomColumn.where(mastery_id: params[:id])
+			columns = DemoCustomColumn.where(mastery_id: params[:id])
 
 			render json: columns
 		end

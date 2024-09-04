@@ -74,3 +74,9 @@ end
 gem "webpacker", "~> 5.4"
 
 gem "jwt"
+
+gem "mutex", "~> 1.0"
+
+gem "bigdecimal", "~> 3.1"
+
+gem "mutex_m", "~> 0.2.0"

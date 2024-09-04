@@ -1,6 +1,6 @@
 class CreateMasteriesTable < ActiveRecord::Migration[7.0]
   def change
-    create_table :masteries do |t|
+    create_table :demo_masteries do |t|
       t.string :mastery_name
       t.string :badge_requirements
       t.string :results_description
@@ -9,7 +9,7 @@ class CreateMasteriesTable < ActiveRecord::Migration[7.0]
       t.timestamps
     end
 
-    change_table :awards do |t|
+    change_table :demo_awards do |t|
       t.boolean :has_mastery
     end
   end

@@ -1,6 +1,6 @@
 class CreateAwardsTable < ActiveRecord::Migration[7.0]
   def change
-    create_table :awards do |t|
+    create_table :demo_awards do |t|
       t.string :badge_name
       t.string :badge_requirements
       t.string :results_description
@@ -9,7 +9,7 @@ class CreateAwardsTable < ActiveRecord::Migration[7.0]
       t.timestamps
     end
 
-    change_table :accounts do |t|
+    change_table :demo_accounts do |t|
       t.integer :level
     end
   end

@@ -23,7 +23,7 @@ default: &default
 
 development:
   <<: *default
-  database: quiz_website_development
+  database: demo-BB-21st-Portal
   username: postgres
   password: "LowMJ2303"
 

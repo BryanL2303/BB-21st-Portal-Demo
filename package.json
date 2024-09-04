@@ -1,5 +1,5 @@
 {
-  "name": "quiz-website",
+  "name": "BB-21st-Portal-Demo",
   "version": "1.0.0",
   "description": "This README would normally document whatever steps are necessary to get the application up and running.",
   "main": "./babel.config.js",
@@ -16,14 +16,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/BryanL2303/quiz-website.git"
+    "url": "git+https://github.com/BryanL2303/BB-21st-Portal-Demo.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/BryanL2303/quiz-website/issues"
+    "url": "https://github.com/BryanL2303/BB-21st-Portal-Demo/issues"
   },
-  "homepage": "https://github.com/BryanL2303/quiz-website#readme",
+  "homepage": "https://github.com/BryanL2303/BB-21st-Portal-Demo#readme",
   "dependencies": {
     "@babel/core": "^7.25.2",
     "@babel/plugin-proposal-private-methods": "^7.18.6",

@@ -14,7 +14,7 @@ class ApplicationController < ActionController::Base
 	def authorised_user(token)
 		account_id = decode_token(token)
 		if account_id != nil
-			user = Account.find_by(id: account_id)
+			user = DemoAccount.find_by(id: account_id)
 		else
 			nil
 		end

@@ -1,9 +1,9 @@
 module Api
-	class QuestionOptionController < ApplicationController
+	class DemoQuestionOptionController < ApplicationController
 		protect_from_forgery with: :null_session
 
 		def createOption
-			questionOption = QuestionOption.new(question: params[:question], answer: params[:answer], correct: params[:correct], question_id: params[:question_id])
+			questionOption = DemoQuestionOption.new(question: params[:question], answer: params[:answer], correct: params[:correct], question_id: params[:question_id])
 
 			if questionOption.save
 				render json: true
@@ -13,7 +13,7 @@ module Api
 		end
 
 		def editOption
-			questionOption = QuestionOption.find_by(id: params[:question_option_id])
+			questionOption = DemoQuestionOption.find_by(id: params[:question_option_id])
 			questionOption.question = params[:question]
 			questionOption.answer = params[:answer]
 			questionOption.correct = params[:correct]
@@ -26,7 +26,7 @@ module Api
 		end
 
 		def deleteOption
-			questionOption = QuestionOption.find_by(id: params[:question_option_id])
+			questionOption = DemoQuestionOption.find_by(id: params[:question_option_id])
 
 			if questionOption.destroy
 				render json: true

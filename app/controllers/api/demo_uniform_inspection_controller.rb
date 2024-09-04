@@ -1,21 +1,21 @@
 module Api
-	class UniformInspectionController < ApplicationController
+	class DemoUniformInspectionController < ApplicationController
 		protect_from_forgery with: :null_session
 
 		def createUniformInspection
 			assessorId = decode_token(params[:token])
 			for boy in params[:boys]
-				uniformInspection = UniformInspection.new(account_id: boy['id'], assessor_id: assessorId, date: params[:date])
+				uniformInspection = DemoUniformInspection.new(account_id: boy['id'], assessor_id: assessorId, date: params[:date])
 				uniformInspection.save
 				totalScore = 0
-				components = UniformComponent.all.order('id')
+				components = DemoUniformComponent.all.order('id')
 				for component in components
-					fields = ComponentField.where(uniform_component_id: component.id)
+					fields = DemoComponentField.where(uniform_component_id: component.id)
 					for field in fields
 						if params[:selectedContents][boy['id'].to_s][component.id.to_s][field.id.to_s]
-							selectedComponent = SelectedComponent.new(uniform_inspection_id: uniformInspection.id, component_field_id: field.id)
+							selectedComponent = DemoSelectedComponent.new(uniform_inspection_id: uniformInspection.id, component_field_id: field.id)
 							selectedComponent.save
-							totalScore += ComponentField.find_by(id: field.id).score
+							totalScore += DemoComponentField.find_by(id: field.id).score
 						end
 					end
 				end
@@ -27,23 +27,23 @@ module Api
 		end
 
 		def getInspection
-			inspection = UniformInspection.find_by(id: params[:id])
-			accounts = Account.where(account_type: 'Boy').order('id')
-			boy = Account.find_by(id: inspection.account_id)
+			inspection = DemoUniformInspection.find_by(id: params[:id])
+			accounts = DemoAccount.where(account_type: 'Boy').order('id')
+			boy = DemoAccount.find_by(id: inspection.account_id)
 			inspections = {}
 			boys = []
 			for account in accounts
-				accountInspections = UniformInspection.where(account_id: account.id).order('id')
+				accountInspections = DemoUniformInspection.where(account_id: account.id).order('id')
 				if accountInspections != []
 					boys.push(account)
 					inspections[account.id] = {'inspections': accountInspections}
 					for accountInspection in accountInspections
-						selectedComponents = SelectedComponent.where(uniform_inspection_id: accountInspection.id)
+						selectedComponents = DemoSelectedComponent.where(uniform_inspection_id: accountInspection.id)
 						componentIds = {}
 						for selectedComponent in selectedComponents
 							componentIds[selectedComponent.id] = true
 						end
-						assessor = Account.find_by(id: accountInspection.assessor_id)
+						assessor = DemoAccount.find_by(id: accountInspection.assessor_id)
 						inspections[account.id][accountInspection.id] = {selectedComponents: componentIds, inspection: accountInspection, assessor: assessor}
 					end
 				end
@@ -54,13 +54,13 @@ module Api
 		end
 
 		def getInspectionsSummary
-			accounts = Account.where(account_type: 'Boy').order('level').order('account_name')
+			accounts = DemoAccount.where(account_type: 'Boy').order('level').order('account_name')
 			data = {'boys': accounts}
 			for account in accounts
-				inspection = UniformInspection.where(account_id: account.id).order('created_at')[-1]
+				inspection = DemoUniformInspection.where(account_id: account.id).order('created_at')[-1]
 				data[account.id] = inspection
 				if inspection != nil
-					data[inspection.assessor_id] = Account.find_by(id: inspection.assessor_id)
+					data[inspection.assessor_id] = DemoAccount.find_by(id: inspection.assessor_id)
 				end
 			end
 
@@ -68,11 +68,11 @@ module Api
 		end
 
 		def getComponentFields
-			uniformComponents = UniformComponent.all.order('id')
+			uniformComponents = DemoUniformComponent.all.order('id')
 			components = []
 			data = {}
 			for component in uniformComponents
-				fields = ComponentField.where('uniform_component_id': component.id)
+				fields = DemoComponentField.where('uniform_component_id': component.id)
 				components.push(component)
 				data[component['component_name']] = fields
 			end
@@ -81,13 +81,13 @@ module Api
 		end
 
 		def deleteUniformInspection
-			assignment = Assignment.find_by(id: params[:id])
+			assignment = DemoAssignment.find_by(id: params[:id])
 
-			assigned_accounts = AssignedAccount.where(assignment_id: params[:id])
+			assigned_accounts = DemoAssignedAccount.where(assignment_id: params[:id])
 			for assigned_account in assigned_accounts
-				attemptScores = AttemptScore.where(assigned_account_id: assigned_account.id)
+				attemptScores = DemoAttemptScore.where(assigned_account_id: assigned_account.id)
 				attemptScores.destroy_all
-				assignmentAnswers = AssignmentAnswer.where(account_id: assigned_account.account_id).where(assignment_id: assigned_account.assignment_id)
+				assignmentAnswers = DemoAssignmentAnswer.where(account_id: assigned_account.account_id).where(assignment_id: assigned_account.assignment_id)
 				assignmentAnswers.destroy_all
 			end
 			assigned_accounts.destroy_all
@@ -95,9 +95,9 @@ module Api
 			quiz_id = assignment["quiz_id"]
 
 			if assignment.destroy
-				assignments = Assignment.where(quiz_id: quiz_id)
+				assignments = DemoAssignment.where(quiz_id: quiz_id)
 				if assignments == nil
-					quiz = Quiz.find_by(id: quiz_id)
+					quiz = DemoQuiz.find_by(id: quiz_id)
 					quiz["assigned"] = false
 					quiz.save
 				end

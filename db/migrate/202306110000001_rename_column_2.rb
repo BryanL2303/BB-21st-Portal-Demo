@@ -1,6 +1,6 @@
 class RenameColumn2 < ActiveRecord::Migration[7.0]
   def change
-    change_table :questions do |t|
+    change_table :demo_questions do |t|
       t.remove :type
       t.string :question_type
     end

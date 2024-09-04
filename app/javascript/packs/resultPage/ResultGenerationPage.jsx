@@ -1,6 +1,4 @@
 import React, { useEffect, useState, useContext } from 'react'
-import Popup from 'reactjs-popup';
-import { useParams } from 'react-router-dom'
 import Cookies from 'universal-cookie'
 import axios from 'axios'
 import {NavigationBar} from '../general/NavigationBar'
@@ -56,24 +54,25 @@ const ResultGenerationPage = () => {
     })
     .then(resp => {
       setPrimerAccounts(resp.data)
-      setInstructorId(resp.data[0].id)
-    })
-    .catch(resp => {
-      //Not complete fix, setInstructorId has to be set for all cases
-      setPrimerAccounts([])
-    })
-    axios.post('/api/account/0/get_accounts', {
-      'account_type': 'Officer'
-    })
-    .then(resp => {
-      setOfficerAccounts(resp.data)
-      if (instructorId == null) {
+      let blank = true
+      if (resp.data.length > 0) {
         setInstructorId(resp.data[0].id)
+        blank = false
       }
+      axios.post('/api/account/0/get_accounts', {
+        'account_type': 'Officer'
+      })
+      .then(resp => {
+        setOfficerAccounts(resp.data)
+        if (blank == true) {
+          setInstructorId(resp.data[0].id)
+        }
+      })
+      .catch(resp => {
+        setOfficerAccounts([])
+      })
     })
-    .catch(resp => {
-      setOfficerAccounts([])
-    })
+    .catch(resp => {console.log(resp)})
   }, [])
 
   function selectAward(e) {
@@ -98,7 +97,6 @@ const ResultGenerationPage = () => {
           setMastery(resp.data[parseInt(data[1]) - 1])
           let descriptionBoxes = document.getElementsByClassName('result-description')
           for (let descriptionBox of descriptionBoxes) {
-            console.log(descriptionBox)
             descriptionBox.value = resp.data[parseInt(data[1]) - 1].results_description
           }
           setCustomDescription(resp.data[parseInt(data[1]) - 1].results_description)
